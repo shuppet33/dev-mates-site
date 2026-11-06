@@ -388,7 +388,7 @@ function renderPayment() {
         <button class="payment-action" type="button">Связаться с нами <span aria-hidden="true">↗</span></button>
       </div>
     </section>`;
-  body.querySelector('.payment-action').addEventListener('click', () => renderContacts());
+  body.querySelector('.payment-action').addEventListener('click', () => { renderContacts(); updateDialogHeader(); });
 }
 
 function createConnectorSvg() {
@@ -768,10 +768,12 @@ function openRoadmapTopic(topic) {
         <div><span class="roadmap-topic-kicker">ТЕМА ${topic.id} / 10</span><h2 id="roadmap-topic-title">${topic.title}</h2></div>
         <button class="roadmap-small-close" type="button" data-close-topic aria-label="Закрыть подробности"><img src="assets/close-pixel.svg" alt=""></button>
       </div>
-      <p class="roadmap-topic-description">${topic.short}</p>
-      <h3>Что будем изучать</h3>
-      <ul class="roadmap-topic-list">${topic.items.map((item) => `<li>${item}</li>`).join('')}</ul>
-      <p class="roadmap-topic-practice">Практика и конспект после изучения темы</p>
+      <div class="roadmap-detail-scroll">
+        <p class="roadmap-topic-description">${topic.short}</p>
+        <h3>Что будем изучать</h3>
+        <ul class="roadmap-topic-list">${topic.items.map((item) => `<li>${item}</li>`).join('')}</ul>
+        <p class="roadmap-topic-practice">Практика и конспект после изучения темы</p>
+      </div>
     </div>`;
   topicDialog.querySelector('[data-close-topic]').addEventListener('click', () => topicDialog.close());
   topicDialog.showModal();
@@ -783,11 +785,13 @@ function openRoadmapInfo() {
     <div class="roadmap-info-content">
       <div class="roadmap-info-heading"><div><span class="roadmap-eyebrow">ИНФОРМАЦИЯ ОБ ЭКЗАМЕНЕ</span><h2 id="roadmap-info-title">Как устроена подготовка?</h2></div>
         <button class="roadmap-small-close" type="button" data-close-info aria-label="Закрыть информацию"><img src="assets/close-pixel.svg" alt=""></button></div>
-      <p><strong>На занятиях мы последовательно создаём информационную систему, аналогичную той, которую предстоит разработать на демонстрационном экзамене.</strong></p>
-      <p>Каждая тема закрепляется практикой. После занятий ученики получают конспекты для самостоятельного повторения материала.</p>
-      <p class="roadmap-info-note">Программа ориентирована на инвариантную часть профильного экзамена 2027 года. Вариативная часть, определяемая образовательной организацией, рассматривается отдельно.</p>
-      <div class="roadmap-info-links">
-        ${roadmapLinks.map((link) => `<a href="${link.href}" target="_blank" rel="noopener noreferrer">${link.label} <span aria-hidden="true">↗</span></a>`).join('')}
+      <div class="roadmap-detail-scroll">
+        <p><strong>На занятиях мы последовательно создаём информационную систему, аналогичную той, которую предстоит разработать на демонстрационном экзамене.</strong></p>
+        <p>Каждая тема закрепляется практикой. После занятий ученики получают конспекты для самостоятельного повторения материала.</p>
+        <p class="roadmap-info-note">Программа ориентирована на инвариантную часть профильного экзамена 2027 года. Вариативная часть, определяемая образовательной организацией, рассматривается отдельно.</p>
+        <div class="roadmap-info-links">
+          ${roadmapLinks.map((link) => `<a href="${link.href}" target="_blank" rel="noopener noreferrer">${link.label} <span aria-hidden="true">↗</span></a>`).join('')}
+        </div>
       </div>
     </div>`;
   infoDialog.querySelector('[data-close-info]').addEventListener('click', () => infoDialog.close());
@@ -811,6 +815,27 @@ function renderTextPanel(item) {
   body.replaceChildren(heading, paragraph);
 }
 
+// В закреплённой шапке только подпись раздела и крестик.
+// Настоящий h2 остаётся внутри прокручиваемого #dialog-body.
+function updateDialogHeader() {
+  const slot = document.querySelector('#dialog-header-title');
+  const eyebrow = body.querySelector(
+    '.payment-eyebrow, .contacts-eyebrow, .roadmap-eyebrow'
+  );
+
+  slot.replaceChildren();
+  if (eyebrow) {
+    slot.append(eyebrow);
+  } else {
+    // FAQ и другие разделы без надписи над h2.
+    const label = document.createElement('span');
+    label.className = 'modal-header-kicker';
+    label.textContent = body.querySelector('.faq-list') ? 'FAQ' : 'DEV-MATES';
+    slot.append(label);
+  }
+  body.scrollTop = 0;
+}
+
 document.querySelectorAll('[data-panel]').forEach((button) => {
   button.addEventListener('click', () => {
     if (button.dataset.panel === 'faq') {
@@ -826,6 +851,7 @@ document.querySelectorAll('[data-panel]').forEach((button) => {
       if (!item) return;
       renderTextPanel(item);
     }
+    updateDialogHeader();
     dialog.showModal();
     dialog.focus({ preventScroll: true });
   });

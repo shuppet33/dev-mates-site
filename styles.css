@@ -2283,3 +2283,179 @@ h1 {
 dialog[tabindex="-1"]:focus {
     outline: none;
 }
+
+/* Sticky modal headers. The scrollable region is the body, not <dialog> itself. */
+.modal[open] {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    max-height: min(90dvh, 900px);
+    overscroll-behavior: contain;
+}
+
+.modal[open]:has(.faq-list) { max-height: min(82dvh, 780px); }
+.modal[open]:has(.payment-panel) { max-height: min(90dvh, 900px); }
+.modal[open]:has(.contacts-panel) { max-height: min(90dvh, 790px); }
+.modal[open]:has(.roadmap-panel) { max-height: min(90dvh, 850px); }
+
+.modal-fixed-header {
+    --dialog-pad: 37px;
+    position: relative;
+    z-index: 3;
+    flex: none;
+    min-width: 0;
+    padding: var(--dialog-pad) var(--dialog-pad) 15px;
+    border-bottom: 1px solid #ffffff13;
+    background: var(--surface);
+}
+
+.modal[open]:has(.faq-list) .modal-fixed-header { --dialog-pad: 37px; }
+.modal[open]:has(.payment-panel) .modal-fixed-header { --dialog-pad: clamp(23px, 3.5vw, 38px); }
+.modal[open]:has(.contacts-panel) .modal-fixed-header { --dialog-pad: clamp(22px, 4vw, 38px); }
+.modal[open]:has(.roadmap-panel) .modal-fixed-header { --dialog-pad: clamp(20px, 3.3vw, 34px); }
+
+#dialog-header-title {
+    min-width: 0;
+    padding-right: 25px;
+}
+
+.modal-fixed-header h2,
+.modal .modal-fixed-header h2 {
+    margin: 0;
+}
+
+.modal-fixed-header .contacts-header h2 {
+    font-size: clamp(26px, 4vw, 38px);
+    line-height: 1.16;
+    letter-spacing: -.04em;
+}
+
+.modal-fixed-header .payment-header h2 {
+    margin: 0;
+}
+
+.modal-fixed-header .roadmap-header {
+    padding-right: 0;
+}
+
+.modal-fixed-header .roadmap-header h2 {
+    margin: 0;
+}
+
+.modal-fixed-header .close-button {
+    top: 13px;
+    right: 13px;
+}
+
+.modal #dialog-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 20px 37px 37px;
+    scrollbar-gutter: stable;
+}
+
+.modal:has(.payment-panel) #dialog-body { padding: 20px clamp(23px, 3.5vw, 38px) clamp(23px, 3.5vw, 38px); }
+.modal:has(.contacts-panel) #dialog-body { padding: 20px clamp(22px, 4vw, 38px) clamp(22px, 4vw, 38px); }
+.modal:has(.roadmap-panel) #dialog-body { padding: 18px clamp(20px, 3.3vw, 34px) clamp(20px, 3.3vw, 34px); }
+
+.roadmap-topic-dialog[open], .roadmap-info-dialog[open] {
+    padding: 0;
+    overflow: hidden;
+    max-height: min(84dvh, 790px);
+}
+
+.roadmap-topic-content, .roadmap-info-content {
+    display: flex;
+    flex-direction: column;
+    max-height: min(84dvh, 790px);
+    min-height: 0;
+    gap: 0;
+}
+
+.roadmap-topic-header, .roadmap-info-heading {
+    position: relative;
+    z-index: 2;
+    flex: none;
+    padding: clamp(20px, 3vw, 30px);
+    border-bottom: 1px solid #ffffff13;
+    background: #201b1c;
+}
+
+.roadmap-detail-scroll {
+    display: grid;
+    align-content: start;
+    gap: 15px;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 20px clamp(20px, 3vw, 30px) clamp(20px, 3vw, 30px);
+    scrollbar-gutter: stable;
+}
+
+@media (max-width: 760px) {
+    .modal[open] { max-height: 90dvh; }
+    .modal-fixed-header { --dialog-pad: 21px; }
+    .modal[open]:has(.faq-list) .modal-fixed-header { --dialog-pad: 20px; }
+    .modal[open]:has(.payment-panel) .modal-fixed-header { --dialog-pad: 17px; }
+    .modal[open]:has(.contacts-panel) .modal-fixed-header { --dialog-pad: clamp(22px, 4vw, 38px); }
+    .modal[open]:has(.roadmap-panel) .modal-fixed-header { --dialog-pad: 17px; }
+    .modal:has(.faq-list) #dialog-body { padding: 17px 20px 24px; }
+    .modal:has(.payment-panel) #dialog-body { padding: 17px 17px 25px; }
+    .modal:has(.roadmap-panel) #dialog-body { padding: 17px; }
+}
+
+@media (max-width: 380px) {
+    .modal-fixed-header { --dialog-pad: 21px; }
+}
+
+/* Fixed eyebrow + close button; section h2 stays in the scrollable body. */
+.modal[open] {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+.modal[open] .modal-fixed-header {
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 60px;
+    padding: 12px var(--dialog-pad);
+    background: var(--surface);
+    border-bottom: 1px solid #ffffff1c;
+}
+.modal[open] #dialog-header-title {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding-right: 16px;
+}
+.modal[open] #dialog-header-title .payment-eyebrow,
+.modal[open] #dialog-header-title .contacts-eyebrow,
+.modal[open] #dialog-header-title .roadmap-eyebrow {
+    margin: 0 !important;
+    line-height: 1.35;
+}
+.modal-header-kicker {
+    font: 15px 'Tiny5', monospace;
+    color: var(--green);
+    letter-spacing: .12em;
+}
+.modal[open] .modal-fixed-header .close-button {
+    position: static;
+    flex: 0 0 36px;
+    z-index: 11;
+}
+.modal[open] #dialog-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
