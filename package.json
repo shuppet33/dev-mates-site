@@ -1,0 +1,12 @@
+{
+  "name": "dev-mates-site",
+  "version": "1.0.0",
+  "description": "Откройте `index.html` в браузере. Для локального сервера можно использовать VS Code Live Server или `python -m http.server 8000` из папки проекта.",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

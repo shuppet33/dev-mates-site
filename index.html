@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#131010" />
+    <meta name="description" content="DEV-MATES — учимся, создаём и растём вместе. Подготовка к демо-экзамену 09.02.07." />
+    <title>DEV-MATES — Учимся. Создаём. Растём вместе.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Tiny5&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="hero">
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="DEV-MATES — главная">DEV-MATES</a>
+      </header>
+
+      <section class="hero-content" aria-labelledby="hero-heading">
+        <div class="intro-row">
+          <div class="headline-card">
+            <img class="headline-spark headline-spark-green" src="assets/spark-green.svg" alt="" aria-hidden="true">
+            <h1 id="hero-heading">Учимся. Создаём.<br><span class="gradient-text">Растём вместе.</span></h1>
+            <img class="headline-spark headline-spark-pink" src="assets/spark-pink.svg" alt="" aria-hidden="true">
+          </div>
+          <div class="mascot" aria-label="Два нарисованных персонажа DEV-MATES">
+            <img class="mascot-image" src="assets/mascots.png" alt="Зелёный и розовый маскоты DEV-MATES" />
+            <img class="spark spark-green" src="assets/spark-green.svg" alt="" />
+            <img class="spark spark-pink" src="assets/spark-pink.svg" alt="" />
+          </div>
+        </div>
+
+        <p class="subtitle">Подготовка к демоэкзамену<br /><strong>09.02.07 — «Информационные системы и программирование»</strong></p>
+
+        <nav class="dock" aria-label="Разделы сайта">
+          <!-- Старые иконки:
+          <button class="dock-button" type="button" data-panel="telegram" aria-label="Telegram" title="Telegram"><img src="assets/telegram.svg" alt="" /></button>
+          <button class="dock-button dock-pink" type="button" data-panel="instagram" aria-label="Instagram" title="Instagram"><img src="assets/instagram.svg" alt="" /></button>
+          <button class="dock-button" type="button" data-panel="study" aria-label="Форматы занятий" title="Форматы занятий"><img src="assets/code.svg" alt="" /></button>
+          <button class="dock-button dock-green" type="button" data-panel="application" aria-label="Оставить заявку" title="Оставить заявку"><img src="assets/calendar.svg" alt="" /></button>
+          -->
+
+          <div class="dock-item">
+            <button class="dock-button dock-pink" type="button" data-panel="contacts" aria-label="Контакты" title="Контакты"><img src="assets/contacts.svg" alt="" /></button>
+            <span class="dock-label">Контакты</span>
+          </div>
+          <div class="dock-item">
+            <button class="dock-button" type="button" data-panel="learning-plan" aria-label="План обучения" title="План обучения"><img src="assets/learning-plan.svg" alt="" /></button>
+            <span class="dock-label">План обучения</span>
+          </div>
+          <div class="dock-item">
+            <button class="dock-button dock-green" type="button" data-panel="payment" aria-label="Оплата" title="Оплата"><img src="assets/format-price.svg" alt="" /></button>
+            <span class="dock-label">Оплата</span>
+          </div>
+          <div class="dock-item">
+            <button class="dock-button" type="button" data-panel="faq" aria-label="Частые вопросы" title="FAQ"><img src="assets/faq.svg" alt="" /></button>
+            <span class="dock-label">FAQ</span>
+          </div>
+        </nav>
+      </section>
+    </main>
+
+    <dialog class="modal" id="info-dialog" aria-labelledby="dialog-title">
+      <button class="close-button" type="button" id="close-dialog" aria-label="Закрыть"><img src="assets/close-pixel.svg" alt="" width="20" height="20"></button>
+      <div id="dialog-body"></div>
+    </dialog>
+    <dialog class="roadmap-map-dialog" id="roadmap-map-dialog" aria-label="Интерактивная карта обучения"></dialog>
+    <dialog class="roadmap-topic-dialog" id="roadmap-topic-dialog" aria-labelledby="roadmap-topic-title"></dialog>
+    <dialog class="roadmap-info-dialog" id="roadmap-info-dialog" aria-labelledby="roadmap-info-title"></dialog>
+  </body>
+</html>
