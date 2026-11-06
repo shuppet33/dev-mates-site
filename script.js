@@ -434,31 +434,79 @@ function createTopicCard(topic) {
 }
 
 function setupRoadmapPan(viewport, stage) {
-  const pan = { x: 0, y: 0, pointerId: null, startX: 0, startY: 0, fromX: 0, fromY: 0, dragged: false };
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 1;
+  const ZOOM_STEP = 0.1;
+  const pan = {
+    x: 0, y: 0, zoom: MAX_ZOOM,
+    pointerId: null, startX: 0, startY: 0, fromX: 0, fromY: 0, dragged: false,
+  };
   const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
   const dragThreshold = 9;
+  const activePointers = new Map();
+  const zoomOutButton = mapDialog.querySelector('[data-zoom-out]');
+  const zoomInButton = mapDialog.querySelector('[data-zoom-in]');
+  const zoomValue = mapDialog.querySelector('[data-zoom-value]');
   let suppressClick = false;
+  let pinch = null;
 
   function limits() {
     const padding = 22;
+    const scaledWidth = stage.offsetWidth * pan.zoom;
+    const scaledHeight = stage.offsetHeight * pan.zoom;
+    // Если уменьшенная плоскость стала уже окна, удерживаем её по центру.
+    const horizontal = scaledWidth <= viewport.clientWidth
+      ? (viewport.clientWidth - scaledWidth) / 2
+      : null;
+    const vertical = scaledHeight <= viewport.clientHeight
+      ? (viewport.clientHeight - scaledHeight) / 2
+      : null;
     return {
-      left: Math.min(padding, viewport.clientWidth - stage.offsetWidth - padding),
-      right: padding,
-      top: Math.min(padding, viewport.clientHeight - stage.offsetHeight - padding),
-      bottom: padding,
+      left: horizontal ?? viewport.clientWidth - scaledWidth - padding,
+      right: horizontal ?? padding,
+      top: vertical ?? viewport.clientHeight - scaledHeight - padding,
+      bottom: vertical ?? padding,
     };
   }
 
-  function update(x, y) {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function update(x, y, smooth = false) {
     const { left, right, top, bottom } = limits();
     pan.x = clamp(x, left, right);
     pan.y = clamp(y, top, bottom);
-    stage.style.transform = `translate3d(${pan.x}px, ${pan.y}px, 0)`;
+    // Scale changes animate smoothly; dragging and pinch gestures stay responsive.
+    stage.style.transition = smooth && !reducedMotion.matches
+      ? 'transform 260ms cubic-bezier(.22, 1, .36, 1)'
+      : 'none';
+    stage.style.transform = `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${pan.zoom})`;
+  }
+
+  function showZoom() {
+    const percentage = Math.round(pan.zoom * 100);
+    zoomValue.textContent = `${percentage}%`;
+    zoomOutButton.disabled = pan.zoom <= MIN_ZOOM + 0.001;
+    zoomInButton.disabled = pan.zoom >= MAX_ZOOM - 0.001;
+  }
+
+  function zoomTo(value, clientX, clientY, smooth = true) {
+    const next = clamp(Math.round(value * 1000) / 1000, MIN_ZOOM, MAX_ZOOM);
+    if (Math.abs(next - pan.zoom) < 0.001) return;
+    const rect = viewport.getBoundingClientRect();
+    const anchorX = clientX === undefined ? viewport.clientWidth / 2 : clientX - rect.left;
+    const anchorY = clientY === undefined ? viewport.clientHeight / 2 : clientY - rect.top;
+    const ratio = next / pan.zoom;
+    const x = anchorX - (anchorX - pan.x) * ratio;
+    const y = anchorY - (anchorY - pan.y) * ratio;
+    pan.zoom = next;
+    update(x, y, smooth);
+    showZoom();
   }
 
   function reset() {
-    // Центр первой карточки — по середине ширины и на 45% высоты карты.
-    // Реальные координаты учитывают CSS translate: 260px 210px.
+    // Начальное состояние: прежний размер (100%) и первая карточка по центру.
+    pan.zoom = MAX_ZOOM;
+    showZoom();
     update(0, 0);
     const firstNode = stage.querySelector('[data-roadmap-topic="01"]');
     if (!firstNode) return;
@@ -469,8 +517,28 @@ function setupRoadmapPan(viewport, stage) {
     update(pan.x + x, pan.y + y);
   }
 
+  function pinchDistance() {
+    const [a, b] = [...activePointers.values()];
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  }
+
+  function pinchCenter() {
+    const [a, b] = [...activePointers.values()];
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  }
+
   function pointerDown(event) {
     if (event.button !== undefined && event.button !== 0) return;
+    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (activePointers.size === 2) {
+      suppressClick = true;
+      pan.pointerId = null;
+      pan.dragged = true;
+      viewport.classList.add('roadmap-viewport--dragging');
+      pinch = { distance: pinchDistance(), center: pinchCenter(), zoom: pan.zoom };
+      return;
+    }
+    if (activePointers.size !== 1) return;
     suppressClick = false;
     pan.pointerId = event.pointerId;
     pan.startX = event.clientX;
@@ -478,10 +546,21 @@ function setupRoadmapPan(viewport, stage) {
     pan.fromX = pan.x;
     pan.fromY = pan.y;
     pan.dragged = false;
-    // Не захватываем указатель сразу: обычный тап на карточку должен остаться кликом.
+    // Не захватываем указатель сразу: тап на карточку остаётся обычным кликом.
   }
 
   function pointerMove(event) {
+    if (!activePointers.has(event.pointerId)) return;
+    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (pinch && activePointers.size === 2) {
+      if (event.cancelable) event.preventDefault();
+      const center = pinchCenter();
+      const distance = pinchDistance();
+      zoomTo(pinch.zoom * distance / Math.max(pinch.distance, 1), center.x, center.y, false);
+      update(pan.x + center.x - pinch.center.x, pan.y + center.y - pinch.center.y);
+      pinch.center = center;
+      return;
+    }
     if (event.pointerId !== pan.pointerId) return;
     const dx = event.clientX - pan.startX;
     const dy = event.clientY - pan.startY;
@@ -496,6 +575,18 @@ function setupRoadmapPan(viewport, stage) {
   }
 
   function pointerUp(event) {
+    if (!activePointers.has(event.pointerId)) return;
+    activePointers.delete(event.pointerId);
+    if (pinch) {
+      suppressClick = true;
+      if (activePointers.size < 2) {
+        pinch = null;
+        pan.pointerId = null;
+        pan.dragged = false;
+        viewport.classList.remove('roadmap-viewport--dragging');
+      }
+      return;
+    }
     if (event.pointerId !== pan.pointerId) return;
     suppressClick = pan.dragged;
     pan.pointerId = null;
@@ -504,7 +595,6 @@ function setupRoadmapPan(viewport, stage) {
     if (viewport.hasPointerCapture?.(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
   }
 
-  // После перетаскивания браузер может послать click: не открываем тему случайно.
   viewport.addEventListener('click', (event) => {
     if (!suppressClick) return;
     event.preventDefault();
@@ -517,18 +607,68 @@ function setupRoadmapPan(viewport, stage) {
   window.addEventListener('pointerup', pointerUp);
   window.addEventListener('pointercancel', pointerUp);
 
-  viewport.addEventListener('wheel', (event) => {
-    if (!document.querySelector('#roadmap-map-dialog').open) return;
+  // Прозрачная зона справа не пропускает случайные нажатия к карточкам под панелью.
+  const zoomGuard = mapDialog.querySelector('.roadmap-zoom-guard');
+  ['pointerdown', 'pointerup', 'click', 'dblclick', 'touchstart'].forEach((type) => {
+    zoomGuard.addEventListener(type, (event) => {
+      event.stopPropagation();
+    });
+  });
+  // Панель масштабирования находится поверх карты, но не начинает её перетаскивание.
+  const zoomControls = mapDialog.querySelector('.roadmap-zoom-controls');
+  zoomControls.addEventListener('pointerdown', (event) => event.stopPropagation());
+  zoomControls.addEventListener('wheel', (event) => {
     event.preventDefault();
-    update(pan.x - event.deltaX, pan.y - event.deltaY);
+    event.stopPropagation();
+  }, { passive: false });
+  // iOS Safari may interpret quick successive taps as a double-tap gesture.
+  // Process touch presses immediately and ignore their synthetic click events.
+  function bindZoomButton(button, direction) {
+    let lastTouchTime = -Infinity;
+    button.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+      if (button.disabled) return;
+      lastTouchTime = performance.now();
+      event.preventDefault();
+      zoomTo(pan.zoom + direction * ZOOM_STEP);
+    });
+    button.addEventListener('click', (event) => {
+      if (performance.now() - lastTouchTime < 650) {
+        event.preventDefault();
+        return;
+      }
+      zoomTo(pan.zoom + direction * ZOOM_STEP);
+    });
+  }
+  bindZoomButton(zoomOutButton, -1);
+  bindZoomButton(zoomInButton, 1);
+  viewport.addEventListener('wheel', (event) => {
+    if (!mapDialog.open) return;
+    event.preventDefault();
+    if (event.ctrlKey || event.metaKey) {
+      zoomTo(pan.zoom - Math.sign(event.deltaY) * ZOOM_STEP, event.clientX, event.clientY);
+    } else {
+      update(pan.x - event.deltaX, pan.y - event.deltaY);
+    }
   }, { passive: false });
   viewport.addEventListener('keydown', (event) => {
+    if (event.key === '+' || event.key === '=') {
+      event.preventDefault();
+      zoomTo(pan.zoom + ZOOM_STEP);
+      return;
+    }
+    if (event.key === '-') {
+      event.preventDefault();
+      zoomTo(pan.zoom - ZOOM_STEP);
+      return;
+    }
     const moves = { ArrowUp: [0, 75], ArrowDown: [0, -75], ArrowLeft: [75, 0], ArrowRight: [-75, 0] };
     if (!moves[event.key]) return;
     event.preventDefault();
     update(pan.x + moves[event.key][0], pan.y + moves[event.key][1]);
   });
   window.addEventListener('resize', () => update(pan.x, pan.y), { passive: true });
+  showZoom();
   return { reset };
 }
 
@@ -596,6 +736,12 @@ function openRoadmapMap() {
             <div class="roadmap-marker roadmap-marker--start" style="left:${roadmapTopics[0].position.x + 40}px;top:${roadmapTopics[0].position.y - 66}px" aria-hidden="true">✦ НАЧАЛО</div>
             <div class="roadmap-marker roadmap-marker--finish" style="left:${roadmapTopics[9].position.x + 37}px;top:${roadmapTopics[9].position.y + 166}px" aria-hidden="true">★ ФИНИШ</div>
           </div>
+          <div class="roadmap-zoom-guard" aria-hidden="true"></div>
+          <div class="roadmap-zoom-controls" role="group" aria-label="Масштаб карты">
+            <button type="button" data-zoom-in aria-label="Приблизить карту">+</button>
+            <button type="button" data-zoom-out aria-label="Отдалить карту">−</button>
+            <output data-zoom-value aria-live="off">100%</output>
+          </div>
         </div>
       </div>`;
     const viewport = mapDialog.querySelector('.roadmap-viewport');
@@ -611,6 +757,7 @@ function openRoadmapMap() {
     mapDialog.dataset.ready = 'true';
   }
   mapDialog.showModal();
+  mapDialog.focus({ preventScroll: true });
   panControls.reset();
 }
 
@@ -628,6 +775,7 @@ function openRoadmapTopic(topic) {
     </div>`;
   topicDialog.querySelector('[data-close-topic]').addEventListener('click', () => topicDialog.close());
   topicDialog.showModal();
+  topicDialog.focus({ preventScroll: true });
 }
 
 function openRoadmapInfo() {
@@ -644,6 +792,7 @@ function openRoadmapInfo() {
     </div>`;
   infoDialog.querySelector('[data-close-info]').addEventListener('click', () => infoDialog.close());
   infoDialog.showModal();
+  infoDialog.focus({ preventScroll: true });
 }
 
 // Нативные диалоги сами обрабатывают Escape. По клику снаружи закрываем текущий слой.
@@ -678,6 +827,7 @@ document.querySelectorAll('[data-panel]').forEach((button) => {
       renderTextPanel(item);
     }
     dialog.showModal();
+    dialog.focus({ preventScroll: true });
   });
 });
 

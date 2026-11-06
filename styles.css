@@ -2165,3 +2165,119 @@ h1 {
     }
 }
 
+
+/* Управление масштабом поверх карты: вертикально справа, независимо от перетаскивания. */
+.roadmap-stage {
+    transform-origin: 0 0;
+}
+
+/* Защитная полоса принимает касания справа от кнопок вместо карточек карты. */
+.roadmap-zoom-guard {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 86px;
+    z-index: 4;
+    background: transparent;
+    touch-action: none;
+}
+
+.roadmap-zoom-controls {
+    position: absolute;
+    top: 34%;
+    right: 20px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 52px;
+    padding: 5px;
+    border: 1px solid #504848;
+    border-radius: 15px;
+    background: #292527;
+    box-shadow: 0 10px 28px #0007;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.roadmap-zoom-controls button {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 43px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--white);
+    font-size: 28px;
+    line-height: 1;
+}
+
+.roadmap-zoom-controls button + button {
+    border-top: 1px solid #504848;
+    border-radius: 0 0 10px 10px;
+}
+
+.roadmap-zoom-controls button:hover:not(:disabled) {
+    background: #37483a;
+    color: var(--green);
+}
+
+.roadmap-zoom-controls button:disabled {
+    opacity: .32;
+    cursor: default;
+}
+
+.roadmap-zoom-controls button:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 1px;
+}
+
+.roadmap-zoom-controls output {
+    margin-top: 3px;
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: #c8c0c3;
+    font: 11px 'Tiny5', monospace;
+    padding: 4px 0 3px;
+    border-top: 1px solid #504848;
+}
+
+.roadmap-node {
+    touch-action: none;
+}
+
+@media (max-width: 600px) {
+    .roadmap-zoom-guard {
+        width: 74px;
+    }
+
+    .roadmap-zoom-controls {
+        top: 35%;
+        right: 12px;
+        width: 48px;
+        padding: 4px;
+        border-radius: 13px;
+    }
+
+    .roadmap-zoom-controls button {
+        width: 40px;
+        height: 42px;
+        font-size: 26px;
+    }
+}
+
+/* Mobile Safari: prevent double-tap gesture from consuming every second tap. */
+.roadmap-zoom-controls button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* The dialogs receive initial focus, not their pixel close buttons. */
+dialog[tabindex="-1"]:focus {
+    outline: none;
+}
