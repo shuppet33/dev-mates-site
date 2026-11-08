@@ -188,19 +188,27 @@ const panels = {
 const faqItems = [
   {
     question: 'Сколько стоят занятия?',
-    answer: 'Стоимость занятий за 2 недели — 880 ₽. В эту сумму входят 4 групповых занятия. Оплата вносится заранее, чтобы мы могли планировать расписание и резервировать места в группе.',
+    answer: 'Стоимость зависит от выбранного формата обучения. Групповые занятия оплачиваются блоками ( 4 занятия по 90 минут ) — 880 ₽. Индивидуальные занятия стоят 600 ₽ за 60 минут. Оплата вносится заранее, это помогает нам планировать расписание и сохранять места за учениками.',
+  },
+  {
+    question: 'Будут ли домашние задания?',
+    answer: 'Да, после занятий мы даём домашние задания, чтобы закрепить пройденный материал и потренироваться самостоятельно. На следующих уроках разбираем возникшие вопросы и ошибки.',
+  },
+  {
+    question: 'Есть ли система оценивания?',
+    answer: 'Балльной системы у нас нет. Вместо оценок мы отслеживаем, насколько самостоятельно ученик справляется с заданиями и понимает материал. Это помогает нам видеть его прогресс и понимать, каким темам стоит уделить больше внимания.',
   },
   {
     question: 'Что делать, если я не смогу прийти?',
-    answer: 'Пожалуйста, предупреди нас заранее, если не сможешь прийти. При пропуске без предупреждения занятие считается пропущенным по инициативе ученика; возможные отработки и возвраты рассматриваются с учётом обстоятельств, условий договора и требований законодательства РФ.',
+    answer: 'Договоримся о переносе индивидуального занятия без доплаты. А в случае пропущенного группового занятия — предоставим видеозапись и конспект, чтобы можно было самостоятельно изучить материал.',
   },
   {
-    question: 'Можно ли отработать пропущенное занятие?',
-    answer: 'Мы постараемся организовать дополнительную встречу, на которой можно разобрать пропущенную тему. Доплачивать за неё не нужно: отработка идёт в счёт уже оплаченных занятий. Каждую тему повторно разбираем только один раз.',
+    question: 'Можно ли отработать пропущенное групповое занятие?',
+    answer: 'Если занятие было пропущено, мы постараемся организовать отработку, но не можем её гарантировать. В любом случае предоставим видеозапись занятия и конспект, чтобы можно было самостоятельно изучить пропущенный материал.',
   },
   {
-    question: 'А если я пропущу и отработку?',
-    answer: 'Повторную встречу по той же теме проводить не будем. Но после каждого урока мы готовим конспект, поэтому у тебя останется возможность самостоятельно изучить материал и повторить тему.',
+    question: 'Как изучить тему, если я пропустил занятие?',
+    answer: 'После пропущенного занятия мы предоставим видеозапись урока и конспект, чтобы можно было самостоятельно изучить тему и повторить материал. Если в процессе возникнут вопросы, пиши нам и мы постараемся ответить на них в личном чате в Telegram (@devmates_manager).',
   },
   {
     question: 'Как составляется расписание?',
@@ -208,7 +216,11 @@ const faqItems = [
   },
   {
     question: 'В каком формате проходят занятия?',
-    answer: 'Занятия проходят преимущественно онлайн, в небольших группах до 5–7 человек. Мы разбираем теорию, решаем практические задачи и учимся самостоятельно применять знания.',
+    answer: 'Занятия проходят онлайн, в группах по 5–7 человек или индивидуально. Мы разбираем теорию, решаем практические задачи и учимся самостоятельно применять знания. Для наглядного объяснения сложных конструкций, построения блок-схем и совместной работы используем интерактивную доску Excalidraw (https://excalidraw.com).',
+  },
+  {
+    question: 'Какие платформы используются для связи?',
+    answer: 'Платформу для видеосвязи выбираем по договорённости с учениками, чтобы всем было удобно. Чаще всего используем Яндекс Телемост, LOLKA или Discord.',
   },
 ];
 
@@ -300,19 +312,24 @@ function renderContacts() {
       <h2 id="dialog-title">Давай знакомиться<span class="contacts-title-dot">.</span></h2>
       <p class="contacts-intro">Остались вопросы? Пиши, не стесняйся</p>
       <div class="contacts-list">
-        <a class="contact-card contact-card--primary" href="https://t.me/retr0_qwerty" target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram @retr0_qwerty (откроется в новой вкладке)">
+        <a class="contact-card contact-card--primary" href="https://t.me/devmates_manager" target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram @devmates_manager (откроется в новой вкладке)">
           <span class="contact-card-icon"><img src="assets/telegram.svg" alt="" /></span>
           <span class="contact-card-copy"><span class="contact-card-title">Написать нам <span class="contact-pill">на связи</span></span><span class="contact-card-description">Личные сообщения в Telegram</span><span class="contact-card-handle">@devmates_manager</span></span>
           <span class="contact-card-arrow" aria-hidden="true">↗</span>
         </a>
         <a class="contact-card" href="https://t.me/dev_mates" target="_blank" rel="noopener noreferrer" aria-label="Telegram-канал Dev Mates (откроется в новой вкладке)">
           <span class="contact-card-icon"><img src="assets/telegram.svg" alt="" /></span>
-          <span class="contact-card-copy"><span class="contact-card-title">Наш Telegram-канал</span><span class="contact-card-description">Новости, материалы и жизнь Dev Mates</span><span class="contact-card-handle">t.me/dev_mates</span></span>
+          <span class="contact-card-copy"><span class="contact-card-title">Наш Telegram-канал</span><span class="contact-card-handle">t.me/dev_mates</span></span>
           <span class="contact-card-arrow" aria-hidden="true">↗</span>
         </a>
         <a class="contact-card contact-card--pink" href="https://www.instagram.com/dev.mates.ru" target="_blank" rel="noopener noreferrer" aria-label="Instagram Dev Mates (откроется в новой вкладке)">
           <span class="contact-card-icon"><img src="assets/instagram.svg" alt="" /></span>
-          <span class="contact-card-copy"><span class="contact-card-title">Instagram</span><span class="contact-card-description">Публикации и знакомство с Dev Mates</span><span class="contact-card-handle">@dev.mates.ru</span></span>
+          <span class="contact-card-copy"><span class="contact-card-title">Instagram</span><span class="contact-card-handle">@dev.mates.ru</span></span>
+          <span class="contact-card-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="contact-card" href="https://www.youtube.com/@dev-mates" target="_blank" rel="noopener noreferrer" aria-label="YouTube Dev Mates (откроется в новой вкладке)">
+          <span class="contact-card-icon"><img src="assets/youtube.svg" alt="" /></span>
+          <span class="contact-card-copy"><span class="contact-card-title">YouTube</span><span class="contact-card-handle">@dev-mates</span></span>
           <span class="contact-card-arrow" aria-hidden="true">↗</span>
         </a>
         <button class="contact-card contact-card--email" type="button" data-copy-email aria-label="Скопировать адрес электронной почты dev.mates.ru@gmail.com">
@@ -370,22 +387,22 @@ function renderPayment() {
         </article>
         <article class="payment-tariff payment-tariff--solo">
           <p class="payment-kind">Индивидуальные занятия</p>
-          <div class="payment-price"><strong>600 ₽</strong><span>/ занятие</span></div>
+          <div class="payment-price"><strong>600 ₽</strong><span>/ час</span></div>
           <p class="payment-meta">1 час · один на один</p>
           <p class="payment-invite">Работаем в твоём темпе и вместе выбираем темы под твои цели.</p>
         </article>
       </div>
-      <p class="payment-footnote"><span aria-hidden="true">*</span> Групповые занятия оплачиваются <strong>сразу за 4 занятия вперёд</strong> — 880 ₽. Оплата отдельно за один групповой урок не предусмотрена.</p>
+      <p class="payment-footnote"><span aria-hidden="true">*</span> Групповые занятия оплачиваются <strong>исключительно за 4 занятия вперёд — 880 ₽</strong>. Оплата отдельно за один групповой урок не предусмотрена.</p>
       <div class="payment-details">
         <h3>Как всё устроено?</h3>
-        <div class="payment-detail"><span class="payment-detail-index">01</span><p><strong>Не просто слушаем теорию.</strong> Пишем код, разбираем задачи и готовимся к демоэкзамену. После каждого урока остаётся конспект, чтобы можно было повторить материал.</p></div>
-        <div class="payment-detail"><span class="payment-detail-index">02</span><p><strong>Удобное расписание.</strong> Стараемся подбирать время с учётом возможностей участников группы.</p></div>
-        <div class="payment-detail"><span class="payment-detail-index">03</span><p><strong>Если пропустил урок.</strong> Предупреди заранее — постараемся организовать одну дополнительную встречу по теме в счёт оплаченных занятий, без доплаты.</p></div>
-        <div class="payment-detail"><span class="payment-detail-index">04</span><p><strong>Возврат оплаты.</strong> При отказе от обучения вернём средства за неоказанные услуги в соответствии с законодательством РФ.</p></div>
+        <div class="payment-detail"><span class="payment-detail-index">01</span><p><strong>Не просто слушаем теорию.</strong> Пишем код, разбираем задачи и готовимся к демоэкзамену. После каждого урока остаётся конспект и видеозапись, чтобы можно было повторить материал.</p></div>
+        <div class="payment-detail"><span class="payment-detail-index">02</span><p><strong>Удобное расписание.</strong> Для групповых занятий стараемся подбирать время с учётом возможностей участников группы, для индивидуальных — согласовываем расписание лично с учеником.</p></div>
+        <div class="payment-detail"><span class="payment-detail-index">03</span><p><strong>Если пропустил урок.</strong> Договоримся о переносе индивидуального занятия без доплаты. А в случае пропущенного группового занятия — предоставим видеозапись и конспект, чтобы можно было самостоятельно изучить материал.</p></div>
+        <div class="payment-detail"><span class="payment-detail-index">04</span><p><strong>Возврат оплаты.</strong> При отказе от обучения вернём стоимость неоказанных услуг в течение 10 дней за вычетом фактически понесённых расходов в соответствии с законодательством РФ.</p></div>
       </div>
       <div class="payment-footer">
         <p>Остались вопросы? Поможем выбрать формат и разобраться с условиями.</p>
-        <button class="payment-action" type="button">Связаться с нами <span aria-hidden="true">↗</span></button>
+        <button class="payment-action" type="button">Связаться с нами</button>
       </div>
     </section>`;
   body.querySelector('.payment-action').addEventListener('click', () => { renderContacts(); updateDialogHeader(); });
@@ -723,8 +740,8 @@ function openRoadmapMap() {
       <div class="roadmap-fullscreen">
         <div class="roadmap-fullscreen-header">
           <div class="roadmap-fullscreen-heading">
-            <span class="roadmap-eyebrow">КАРТА ОБУЧЕНИЯ / 2027</span>
-            <strong>Путь к демоэкзамену</strong>
+            <span class="roadmap-eyebrow">КАРТА ОБУЧЕНИЯ</span>
+            <strong>Путь к демоэкзамену 2027</strong>
             <span class="roadmap-drag-hint">✥ Перетаскивай карту в любом направлении</span>
           </div>
           <button type="button" class="roadmap-map-close" data-close-roadmap aria-label="Закрыть карту"><img src="assets/close-pixel.svg" alt="" /></button>

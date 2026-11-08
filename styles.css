@@ -52,6 +52,39 @@ button {
 .site-header {
     width: min(100%, 1380px);
     margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.offer-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 14px;
+    border: 1px solid rgba(255, 255, 255, .38);
+    border-radius: 12px;
+    color: var(--white);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color .2s ease, border-color .2s ease;
+}
+
+.offer-link:hover,
+.offer-link:focus-visible {
+    background: rgba(255, 255, 255, .10);
+    border-color: rgba(255, 255, 255, .7);
+}
+
+@media (max-width: 640px) {
+    .offer-link { padding: 8px 10px; font-size: 11px; border-radius: 10px; }
+    .offer-link-label { font-size: 0; }
+    .offer-link-label::after { content: 'Оферта'; font-size: 11px; }
 }
 
 .brand {
@@ -852,7 +885,6 @@ h1 {
 }
 
 .modal .payment-footer p {
-    max-width: 390px;
     margin: 0;
     font-size: 13px;
 }
