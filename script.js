@@ -751,7 +751,7 @@ function openRoadmapMap() {
             ${createConnectorSvg()}
             ${roadmapTopics.map(createTopicCard).join('')}
             <div class="roadmap-marker roadmap-marker--start" style="left:${roadmapTopics[0].position.x + 40}px;top:${roadmapTopics[0].position.y - 66}px" aria-hidden="true">✦ НАЧАЛО</div>
-            <div class="roadmap-marker roadmap-marker--finish" style="left:${roadmapTopics[9].position.x + 37}px;top:${roadmapTopics[9].position.y + 166}px" aria-hidden="true">★ ФИНИШ</div>
+            <div class="roadmap-marker roadmap-marker--finish" style="left:${roadmapTopics[9].position.x + 40}px;top:${roadmapTopics[9].position.y + 230}px" aria-hidden="true">★ ФИНИШ</div>
           </div>
           <div class="roadmap-zoom-guard" aria-hidden="true"></div>
           <div class="roadmap-zoom-controls" role="group" aria-label="Масштаб карты">
